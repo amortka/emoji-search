@@ -16,7 +16,11 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+  
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -36,7 +40,13 @@ jobs:
     - name: build artifact
       run: yarn run build
 
-    - uses: actions/upload-artifact@v2
+#    - uses: actions/upload-artifact@v2
+#      with:
+#        name: my-artifact
+#        path: build/
+       
+    - uses: reggionick/s3-deploy@v1
       with:
-        name: my-artifact
-        path: build/
+        folder: build
+        bucket: ${{ secrets.S3_BUCKET }}
+        # dist-id: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
